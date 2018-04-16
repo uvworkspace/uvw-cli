@@ -1,0 +1,37 @@
+#! /usr/bin/env node
+
+var path = require('path');
+var repl = require('repl');
+var program = require('uvw-commander');
+
+var uvwUtils = require('uvw-node/uvw/utils');
+var MetaContext = require('uvw-node/uvw/meta-context');
+
+var argv = process.argv;
+if (argv.length < 3) argv.push('.'); 
+
+program
+.allowUnknownOption()
+.version(require('../package').version)
+.description('uvw meta tools')
+.usage('<command> [options]')
+.option('-s, --spec', 'print spec')
+.command('install', 'install package')
+.command('info', 'about meta')
+.command('init <package> [name]', 'create uvw project')
+.command('xbar', 'xbar commands')
+.command('shell', 'enter uvw shell')
+.command('db', 'access local db')
+.parse(argv);
+
+var args = program.args;
+var opts = program.collectedOptions;
+
+var arg0 = args[0] || '.';
+var arg1 = args[1] || 'info';
+if (arg0[0] !== '.') return;
+
+var fpath = path.resolve(process.cwd(), arg0);
+var ret = uvwUtils.evaluate(fpath, arg1, args.slice(2), opts);
+if (ret !== undefined) console.log(ret);
+

@@ -1,0 +1,35 @@
+#! /usr/bin/env node
+
+var path = require('path');
+var repl = require('repl');
+var program = require('uvw-commander');
+
+var uvwUtils = require('uvw-node/uvw/utils');
+var MetaContext = require('uvw-node/uvw/meta-context');
+
+var argv = process.argv;
+if (argv.length < 3) argv.push('.'); 
+
+program
+.allowUnknownOption()
+.version(require('../package').version)
+.description('xbar tools')
+.usage('<command> [options]')
+.command('info', 'xbar info')
+.command('mbox', 'xbar mbox')
+.command('login', 'login')
+.command('logout', 'logout')
+.parse(argv);
+
+var args = program.args;
+var opts = program.collectedOptions;
+
+var arg0 = args[0] || '.';
+if (arg0[0] !== '.') return;
+
+var rest = args.length < 2 ? ['info'] : args.slice(1);
+
+var fpath = path.resolve(process.cwd(), arg0);
+var ret = uvwUtils.evaluate(fpath, 'xbar', rest, opts);
+if (ret !== undefined) console.log(ret);
+

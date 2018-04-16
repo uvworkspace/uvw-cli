@@ -1,0 +1,26 @@
+{
+  "name": "uvw-cli",
+  "version": "0.0.1",
+  "description": "uvw metaphoric programming support",
+  "repository": "https://github.com/uvworkspace/uvw-cli",
+  "author": "uvworkspace <uvw@mytraces.net>",
+  "license": "MIT",
+  "bin": {
+    "uvw": "bin/uvw",
+    "xbar": "bin/xbar"
+  },
+  "scripts": {
+    "test": "tap test/*.test.js"
+  },
+  "dependencies": {
+    "keytar": "^4.1.0",
+    "shelljs": "^0.8.1",
+    "user-home": "^2.0.0",
+    "uvw-commander": "^2.15.1",
+    "uvw-node": "^0.0.4",
+    "uvwlib": "^0.0.5"
+  },
+  "devDependencies": {
+    "tap": "^11.1.4"
+  }
+}

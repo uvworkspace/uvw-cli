@@ -1,0 +1,20 @@
+#! /usr/bin/env node
+
+var path = require('path');
+var program = require('uvw-commander');
+var uvwUtils = require('uvw-node/uvw/utils');
+var MetaContext = require('uvw-node/uvw/meta-context'); 
+var Repl = require('../lib/repl');
+
+program
+.description('uvw meta shell')
+.parse(process.argv);
+
+var args = program.args;
+var arg0 = args[0] || '.';
+
+var spec = uvwUtils.findSpec(path.resolve(process.cwd(), arg0));
+if (!spec) return 'spec not found';
+
+var cntx = MetaContext.instance(null, null, spec);
+Repl.instance(cntx, spec.initPath).start();

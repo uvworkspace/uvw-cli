@@ -1,0 +1,23 @@
+#! /usr/bin/env node
+
+var path = require('path');
+var program = require('uvw-commander');
+
+var XbarDb = require('xbars/db');
+
+program
+.description('login xbar')
+.option('-u, --user <id>', 'user id')
+.parse(process.argv);
+
+var uid = program.args[0] || program.user;
+
+var db = XbarDb.instance();
+var user = db.getUser();
+
+if (!uid) return console.log('logged in:', user.uid);
+
+user.uid = uid;
+db.saveUser(user);
+console.log('logged in as:', user.uid);
+

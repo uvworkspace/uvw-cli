@@ -1,0 +1,18 @@
+#! /usr/bin/env node
+
+var path = require('path');
+var home = require('user-home');
+var program = require('uvw-commander');
+
+var XbarDb = require('xbars/db');
+
+program
+.description('logout xbar')
+.parse(process.argv);
+
+var db = XbarDb.instance();
+var user = db.getUser();
+delete user.uid;
+db.saveUser(user);
+console.log('logged out');
+
