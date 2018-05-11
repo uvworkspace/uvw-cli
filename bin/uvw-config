@@ -7,7 +7,8 @@ var cliUtils = require('../lib/utils');
 
 program
 .allowUnknownOption()
-.description('xbar info')
+.description('About context index')
+.option('-M, --mtype <mtype>', 'change index type')
 .parse(process.argv);
 
 var args = program.args;
@@ -15,6 +16,6 @@ var opts = program.collectedOptions;
 var arg0 = args[0] || '.';
 
 var fpath = path.resolve(process.cwd(), arg0);
-var ret = cliUtils.evaluate(fpath, 'xbar', ['info'].concat(args.slice(1)), opts);
+var ret = cliUtils.configIndex(fpath, args, opts);
 if (ret !== undefined) console.log(ret);
 

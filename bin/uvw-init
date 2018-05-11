@@ -4,33 +4,21 @@ var path = require('path');
 var shell = require('shelljs');
 var program = require('uvw-commander');
 
-var uvwUtils = require('uvw-node/uvw/utils');
-var MetaContext = require('uvw-node/uvw/meta-context');
+var Home = require('../lib/home');
 
-var pkgName;
+var pkgName, extName;
 
 program
-.allowUnknownOption()
-.description('init uvw project')
-.usage('<package> [name]', 'the package to extend from')
-.action(function(pkg) {
+.description('create a uvw project')
+.arguments('<name> [package]', 'project name and the package to extend from')
+.action(function(pkg, ext) {
   pkgName = pkg;
+  extName = ext;
 })
 .parse(process.argv);
 
 if (!pkgName) return program.help()
 
-if (pkgName[0] !== '.') {
-  console.error('Sorry local package for now');
-  return;
-}
-
-var spec = uvwUtils.findSpec(path.resolve(process.cwd(), pkgName));
-if (!spec) return 'spec not found';
-if (spec.rootType !== 'package.json') return console.error('invalid spec type:', spec.rootType);
-
-var cntx = MetaContext.instance(null, null, spec);
-var index = cntx.index();
-var ret = index.uvw_init(program.args.slice(1), program.collectedOptions);
-if (ret !== undefined) console.log(ret);
+var ret = Home.instance().createPackage(pkgName, extName);
+if (typeof ret === 'string') console.log(ret);
 

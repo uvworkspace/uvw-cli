@@ -5,14 +5,31 @@ var home = require('user-home');
 var program = require('uvw-commander');
 
 var XbarDb = require('xbars/db');
+var cliUtils = require('../lib/utils');
 
 program
 .description('logout xbar')
+.option('-L, --local', 'only for current package')
 .parse(process.argv);
 
-var db = XbarDb.instance();
-var user = db.getUser();
-delete user.uid;
-db.saveUser(user);
-console.log('logged out');
+var local = !!program.local;
+
+var root = cliUtils.findRootContext(process.cwd());
+var hashId = root && root.hashId() || null;
+if (local && !hashId) return console.log('site not found');
+
+var homeDir = root && root.spec.root && root.spec.root.homeDir;
+var db = XbarDb.instance({ homeDir: homeDir });
+var user = db.getUser(hashId);
+if (!user.uid) return console.log('not logged in');
+
+if (local && !user.hashId) {
+  return console.log(user.uid + '@' + hashId, 'not logged in');
+}
+
+var at = user.hashId ? '@' + user.hashId : '@home';
+
+var uid = user.uid;
+db.saveUser({ hashId: local ? hashId : user.hashId });
+console.log('logged out', uid + at);
 

@@ -3,8 +3,7 @@
 var path = require('path');
 var program = require('uvw-commander');
 
-var uvwUtils = require('uvw-node/uvw/utils');
-var MetaContext = require('uvw-node/uvw/meta-context');
+var cliUtils = require('../lib/utils');
 
 program
 .allowUnknownOption()
@@ -16,6 +15,6 @@ var opts = program.collectedOptions;
 var arg0 = args[0] || '.';
 
 var fpath = path.resolve(process.cwd(), arg0);
-var ret = uvwUtils.evaluate(fpath, 'xbar', ['mbox'].concat(args.slice(1)), opts);
+var ret = cliUtils.evaluate(fpath, 'xbar', ['mbox'].concat(args.slice(1)), opts);
 if (ret !== undefined) console.log(ret);
 

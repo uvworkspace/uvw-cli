@@ -2,9 +2,9 @@
 
 var path = require('path');
 var program = require('uvw-commander');
-var uvwUtils = require('uvw-node/uvw/utils');
-var MetaContext = require('uvw-node/uvw/meta-context'); 
+var Home = require('../lib/home');
 var Repl = require('../lib/repl');
+var cliUtils = require('../lib/utils');
 
 program
 .description('uvw meta shell')
@@ -12,9 +12,12 @@ program
 
 var args = program.args;
 var arg0 = args[0] || '.';
+var fpath = path.resolve(process.cwd(), arg0);
 
-var spec = uvwUtils.findSpec(path.resolve(process.cwd(), arg0));
-if (!spec) return 'spec not found';
+var rootCntx = cliUtils.findRootContext(fpath);
+if (!rootCntx) return console.error('root context not found at', fpath);
 
-var cntx = MetaContext.instance(null, null, spec);
-Repl.instance(cntx, spec.initPath).start();
+Repl.instance({
+  rootCntx: rootCntx,
+}).start();
+

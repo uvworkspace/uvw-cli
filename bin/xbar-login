@@ -3,21 +3,39 @@
 var path = require('path');
 var program = require('uvw-commander');
 
-var XbarDb = require('xbars/db');
+var XbarDb = require('xbars/db/local');
+var cliUtils = require('../lib/utils');
 
 program
 .description('login xbar')
 .option('-u, --user <id>', 'user id')
+.option('-L, --local', 'only for current package')
+.option('-I, --info', 'all user info')
 .parse(process.argv);
 
 var uid = program.args[0] || program.user;
+var local = program.local;
+
+var root = cliUtils.findRootContext(process.cwd());
+var rootId = root && root.rootId() || null;
+if (local && !rootId) return console.log('root not found');
 
 var db = XbarDb.instance();
-var user = db.getUser();
+var user = db.getUser(rootId);
+var at = user.rootId ? '@' + user.rootId : '@home';
+if (!uid) {
+  if (!user.uid) return console.log('not logged in');
+  if (program.info) {
+    if (rootId) console.log(db.getSite(rootId));
+    return console.log(user);
+  }
+  return console.log(user.uid + at);
+}
 
-if (!uid) return console.log('logged in:', user.uid);
+if (user.uid && (!local || user.rootId)) {
+  return console.log('already logged in as', user.uid + at);  
+}
 
-user.uid = uid;
-db.saveUser(user);
-console.log('logged in as:', user.uid);
+db.saveUser({ uid: uid, rootId: local ? rootId : null });
+console.log('logged in as', uid + (local ? '@' + rootId : '@home'));
 

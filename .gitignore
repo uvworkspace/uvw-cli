@@ -57,5 +57,10 @@ typings/
 # dotenv environment variables file
 .env*
 
-# misc
+# Misc
+dist
+*.swp
+*~
+Thumbs.db
+.vscode
 

@@ -4,8 +4,7 @@ var path = require('path');
 var repl = require('repl');
 var program = require('uvw-commander');
 
-var uvwUtils = require('uvw-node/uvw/utils');
-var MetaContext = require('uvw-node/uvw/meta-context');
+var cliUtils = require('../lib/utils');
 
 var argv = process.argv;
 if (argv.length < 3) argv.push('.'); 
@@ -16,12 +15,13 @@ program
 .description('uvw meta tools')
 .usage('<command> [options]')
 .option('-s, --spec', 'print spec')
-.command('install', 'install package')
 .command('info', 'about meta')
-.command('init <package> [name]', 'create uvw project')
-.command('xbar', 'xbar commands')
+.command('deploy <package> [name]', 'deploy a package instance')
+.command('init <name> [package]', 'create a uvw project')
 .command('shell', 'enter uvw shell')
-.command('db', 'access local db')
+.command('install', 'install package')
+.command('config', 'config index')
+.command('run', 'run file')
 .parse(argv);
 
 var args = program.args;
@@ -32,6 +32,6 @@ var arg1 = args[1] || 'info';
 if (arg0[0] !== '.') return;
 
 var fpath = path.resolve(process.cwd(), arg0);
-var ret = uvwUtils.evaluate(fpath, arg1, args.slice(2), opts);
+var ret = cliUtils.evaluate(fpath, arg1, args.slice(2), opts);
 if (ret !== undefined) console.log(ret);
 

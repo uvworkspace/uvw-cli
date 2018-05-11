@@ -1,0 +1,25 @@
+#! /usr/bin/env node
+
+var path = require('path');
+var program = require('uvw-commander');
+
+var Home = require('../lib/home');
+
+var pkgName, instName;
+
+program
+.allowUnknownOption()
+.description('deploy a package instance')
+.arguments('<package> [name]', 'the package to deploy')
+.action(function(pkg, name) {
+  pkgName = pkg;
+  instName = name;
+})
+.parse(process.argv);
+
+if (!pkgName) return program.help()
+
+var ret = Home.instance().deployPackage(pkgName, instName, program.collectedOptions);
+if (typeof ret === 'string') console.log(ret);
+
+

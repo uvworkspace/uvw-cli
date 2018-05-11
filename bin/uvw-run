@@ -1,0 +1,38 @@
+#! /usr/bin/env node
+
+var path = require('path');
+var program = require('uvw-commander');
+
+var Runner = require('../lib/runner');
+
+program
+.option('-B, --base <dir>', 'base dir')
+.option('-I, --init <file>', 'run init script file')
+.option('-F, --file <file>', 'run script file')
+.option('-S, --sim', 'sim xbar DB')
+.option('-v, --verbose', 'show command')
+.parse(process.argv);
+
+var opts = program.collectedOptions;
+var args = program.args;
+var arg0 = args[0];
+var baseDir = program.base;
+var initFile = program.init;
+var file = program.file;
+
+//NOTE: use file ext to decide if first is baseDir
+if (!baseDir && arg0 && !path.extname(arg0)) {
+  baseDir = arg0;
+  args = args.slice(1);
+}
+
+var runner = Runner.instance(baseDir, opts);
+if (initFile) runner.run(initFile);
+if (!file && !args.length) {
+  runner.run();
+} else {
+  if (file) runner.run(file);
+  args.forEach(function(file) {
+    runner.run(file);
+  });
+}

@@ -1,0 +1,23 @@
+#! /usr/bin/env node
+
+var program = require('uvw-commander');
+
+var Home = require('../lib/home');
+
+var pkgName;
+
+program
+.description('install package')
+.arguments('<package>')
+.action(function(pkg) {
+  pkgName = pkg;
+})
+.parse(process.argv);
+
+if (!pkgName) return program.help();
+
+console.log('Installing', pkgName, '...');
+var ret = Home.instance().installPackage(pkgName);
+if (typeof ret === 'string') console.log(ret);
+
+
