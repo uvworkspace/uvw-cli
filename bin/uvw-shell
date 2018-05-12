@@ -2,7 +2,6 @@
 
 var path = require('path');
 var program = require('uvw-commander');
-var Home = require('../lib/home');
 var Repl = require('../lib/repl');
 var cliUtils = require('../lib/utils');
 

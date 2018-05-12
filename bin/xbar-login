@@ -9,7 +9,7 @@ var cliUtils = require('../lib/utils');
 program
 .description('login xbar')
 .option('-u, --user <id>', 'user id')
-.option('-L, --local', 'only for current package')
+.option('-L, --local', 'only for current site')
 .option('-I, --info', 'all user info')
 .parse(process.argv);
 
@@ -21,21 +21,24 @@ var rootId = root && root.rootId() || null;
 if (local && !rootId) return console.log('root not found');
 
 var db = XbarDb.instance();
-var user = db.getUser(rootId);
-var at = user.rootId ? '@' + user.rootId : '@home';
-if (!uid) {
-  if (!user.uid) return console.log('not logged in');
-  if (program.info) {
-    if (rootId) console.log(db.getSite(rootId));
-    return console.log(user);
+db.getLoginUser(rootId)
+.then(function(user) {
+  var at = user.rootId ? '@' + user.rootId : '@home';
+  if (!uid) {
+    if (!user.uid) return console.log('not logged in');
+    return console.log(user.uid + at);
   }
-  return console.log(user.uid + at);
-}
 
-if (user.uid && (!local || user.rootId)) {
-  return console.log('already logged in as', user.uid + at);  
-}
+  if (user.uid && (!local || user.rootId)) {
+    return console.log('already logged in as', user.uid + at);  
+  }
 
-db.saveUser({ uid: uid, rootId: local ? rootId : null });
-console.log('logged in as', uid + (local ? '@' + rootId : '@home'));
+  return db.login(uid, local ? rootId : null)
+  .then(function(user) {
+     console.log('logged in as', user.uid + (user.rootId ? '@' + rootId : '@home'));
+  });
+})
+.catch(function(err) {
+  console.error(err);
+});
 

@@ -4,7 +4,7 @@ var path = require('path');
 var home = require('user-home');
 var program = require('uvw-commander');
 
-var XbarDb = require('xbars/db');
+var XbarDb = require('xbars/db/local');
 var cliUtils = require('../lib/utils');
 
 program
@@ -15,21 +15,15 @@ program
 var local = !!program.local;
 
 var root = cliUtils.findRootContext(process.cwd());
-var hashId = root && root.hashId() || null;
-if (local && !hashId) return console.log('site not found');
+var rootId = root && root.rootId() || null;
+if (local && !rootId) return console.log('root not found');
 
-var homeDir = root && root.spec.root && root.spec.root.homeDir;
-var db = XbarDb.instance({ homeDir: homeDir });
-var user = db.getUser(hashId);
-if (!user.uid) return console.log('not logged in');
-
-if (local && !user.hashId) {
-  return console.log(user.uid + '@' + hashId, 'not logged in');
-}
-
-var at = user.hashId ? '@' + user.hashId : '@home';
-
-var uid = user.uid;
-db.saveUser({ hashId: local ? hashId : user.hashId });
-console.log('logged out', uid + at);
+var db = XbarDb.instance();
+db.logout(local ? rootId : null)
+.then(function() {
+  console.log('Bye');
+})
+.catch(function(err) {
+  console.error(err);
+});
 
